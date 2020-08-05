@@ -83,10 +83,12 @@ public class PhysicsObj : MonoBehaviour {
 					}
 				} 
 				float projection = Vector2.Dot(velocity, currentNormal);
+				// descnedanct velocity
 				if (projection < 0)
 				{
 					velocity = velocity - projection * currentNormal;
 				}
+				// Collision distance low and real move, back it
 				float modifiedDistance = hitBufferList[i].distance - shellRaius;
 				distance = modifiedDistance < distance ? modifiedDistance : distance;
 			}
