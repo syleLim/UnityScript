@@ -8,6 +8,8 @@ public class PhysicsObj : MonoBehaviour {
 	protected const float	minMoveDistance = 0.001f;	// For check valid move
 	protected const float	shellRaius = 0.01f;			// ?
 	
+
+	protected Vector2	targetVelocity;
 	protected bool		grounded;
 	protected Vector2	groundedNormal;
 
@@ -31,8 +33,17 @@ public class PhysicsObj : MonoBehaviour {
 		grounded = false;
 
 		velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
+		velocity.x = targetVelocity.x;
+
+		Vector2 moveAlongGround = new Vector2(groundedNormal.y, -groundedNormal.x);
+
+		
 		Vector2 deltaPosition = velocity * Time.deltaTime;
-		Vector2 move = Vector2.up * deltaPosition.y;
+		// Move first horizontal
+		Vector2 move = moveAlongGround * deltaPosition.x;
+		Movement(move, false);
+		// Move Gravity(yMove)
+		move = Vector2.up * deltaPosition.y;
 		Movement(move, true);
 	}
 
