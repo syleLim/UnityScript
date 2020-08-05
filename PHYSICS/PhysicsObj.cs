@@ -29,6 +29,16 @@ public class PhysicsObj : MonoBehaviour {
 		contactFilter.useLayerMask = true;
 	}
 
+	void Update() {
+		targetVelocity = Vector2.zero;
+		ComputeVelocity();
+	}
+
+	protected virtual void ComputeVelocity()
+	{
+
+	}
+
 	private void FixedUpdate() {
 		grounded = false;
 
@@ -37,7 +47,6 @@ public class PhysicsObj : MonoBehaviour {
 
 		Vector2 moveAlongGround = new Vector2(groundedNormal.y, -groundedNormal.x);
 
-		
 		Vector2 deltaPosition = velocity * Time.deltaTime;
 		// Move first horizontal
 		Vector2 move = moveAlongGround * deltaPosition.x;
