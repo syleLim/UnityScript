@@ -16,6 +16,7 @@ public class PlayerPlatform : MonoBehaviour
     */
     private const float velocity = 10f;
     private const float jumpForce = 2f;
+    private int facingDirection = 1;
     public int amountOfJumps = 2;
     public float wallSlidingSpeed;
     public float groundCheckRadius;
@@ -23,7 +24,12 @@ public class PlayerPlatform : MonoBehaviour
     public float movementForceInAir;
     public float airDragMultiplier = 0.55f;
     public float jumpHighierMultiplier = 0.5f;
+    public float wallHopForce;
+    public float wallJumpForce;
     
+
+    public Vector2 wallHopDirection;
+    public Vector2 wallJumpDirection;
     
 
     protected Rigidbody2D rb2D;
@@ -33,6 +39,7 @@ public class PlayerPlatform : MonoBehaviour
     public Transform wallCheck;
     public LayerMask WhatIsGround;
     
+
     private bool isFacingRight;
     private bool isWalking;
     private bool isGrounded;
@@ -40,18 +47,17 @@ public class PlayerPlatform : MonoBehaviour
     private bool isWallSliding;
     private bool canJump;
     private int amountOfJumpsLeft;
-
-
-    private void OnEnable() {
-        rb2D = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
-        isFacingRight = true;
-    }
+    
 
     // Start is called before the first frame update
     void Start()
     {
+        rb2D = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+        isFacingRight = true;
         amountOfJumpsLeft = amountOfJumps;
+        wallHopDirection.Normalize();
+        wallJumpDirection.Normalize();
     }
 
     // Update is called once per frame
@@ -84,8 +90,27 @@ public class PlayerPlatform : MonoBehaviour
 
     protected void Jump()
     {
-        rb2D.velocity = new Vector2(rb2D.velocity.x, jumpForce);
-        amountOfJumpsLeft--;
+        if (canJump && !isWallSliding) // !isWallSliding is wall jump
+        {
+            rb2D.velocity = new Vector2(rb2D.velocity.x, jumpForce);
+            amountOfJumpsLeft--;
+        }
+        // Below is for Hopping Wall(Just down ward(not jump))
+        else if (isWallSliding && moveDirection == 0 && canJump)
+        {
+            isWallSliding = false;
+            amountOfJumpsLeft--;
+            Vector2 forceToAdd = new Vector2(wallHopForce * wallHopDirection.x * -facingDirection, wallHopForce * wallHopDirection.y);
+            rb2D.AddForce(forceToAdd, ForceMode2D.Impulse);
+        }
+        // Below is for Jump at Wall
+        else if ((isWallSliding || isTouchingWall) && moveDirection != 0 && canJump)
+        {
+            isWallSliding = false;
+            amountOfJumpsLeft--;
+            Vector2 forceToAdd = new Vector2(wallJumpForce * wallJumpDirection.x * moveDirection, wallJumpForce * wallJumpDirection.y);
+            rb2D.AddForce(forceToAdd, ForceMode2D.Impulse);
+        }
     }
 
     /*
@@ -110,7 +135,7 @@ public class PlayerPlatform : MonoBehaviour
 
     private void CheckIfJump()
     {
-        if (isGrounded && rb2D.velocity.y <= 0)
+        if ((isGrounded && rb2D.velocity.y <= 0) || isWallSliding)
             amountOfJumpsLeft = amountOfJumps;
         
         if (amountOfJumpsLeft <= 0)
@@ -136,6 +161,7 @@ public class PlayerPlatform : MonoBehaviour
     {
         if (!isWallSliding) // This condition for right position for wallSliding.
         {
+            facingDirection *= -1;
             isFacingRight = !isFacingRight;
             transform.Rotate(0.0f, 100.0f, 0.0f);
         }
