@@ -64,14 +64,6 @@ public class PlayerPlatform : MonoBehaviour
         CheckIfWallSliding();
     }
 
-    private void CheckIfWallSliding()
-    {
-        if (isTouchingWall && !isGrounded && rb2D.velocity.y < 0)
-            isWallSliding = true;
-        else
-            isWallSliding = false;
-    }
-
     private void FixedUpdate() {
         applyMovement();
         CheckSurroundings();
@@ -108,6 +100,14 @@ public class PlayerPlatform : MonoBehaviour
         isTouchingWall = Physics2D.Raycast(wallCheck.position, transform.right, wallCheckDistance, WhatIsGround);
     }
 
+    private void CheckIfWallSliding()
+    {
+        if (isTouchingWall && !isGrounded && rb2D.velocity.y < 0)
+            isWallSliding = true;
+        else
+            isWallSliding = false;
+    }
+
     private void CheckIfJump()
     {
         if (isGrounded && rb2D.velocity.y <= 0)
@@ -130,7 +130,6 @@ public class PlayerPlatform : MonoBehaviour
             isWalking = true;
         else
             isWalking = false;
-
     }
 
     protected void Flip()
@@ -159,10 +158,8 @@ public class PlayerPlatform : MonoBehaviour
             Vector2 forceToAdd = new Vector2(movementForceInAir * moveDirection, 0);
             rb2D.AddForce(forceToAdd);
 
-            if (Mathf.Abs(rb2D.velocity.x) > velocity) 
-            {
+            if (Mathf.Abs(rb2D.velocity.x) > velocity)
                 rb2D.velocity = new Vector2(velocity * moveDirection, rb2D.velocity.y);
-            }
         }
         // This for slow down airmove when stop input. move speed slow down.
         else if (!isGrounded && !isWallSliding && moveDirection == 0)
