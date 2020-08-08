@@ -20,6 +20,8 @@ public class PlayerPlatform : MonoBehaviour
     public float wallSlidingSpeed;
     public float groundCheckRadius;
     public float wallCheckDistance;
+    public float movementForceInAir;
+    public float airDragMultiplier = 0.55f;
     
     
 
@@ -129,7 +131,7 @@ public class PlayerPlatform : MonoBehaviour
 
     protected void Flip()
     {
-        if (!isWallSliding)
+        if (!isWallSliding) // This condition for right position for wallSliding.
         {
             isFacingRight = !isFacingRight;
             transform.Rotate(0.0f, 100.0f, 0.0f);
@@ -147,7 +149,23 @@ public class PlayerPlatform : MonoBehaviour
     {
         if (isGrounded)
             rb2D.velocity = new Vector2(velocity * moveDirection, rb2D.velocity.y);
+        // This for Charactor while jump, move little different.
+        else if (!isGrounded && !isWallSliding && moveDirection != 0)
+        {
+            Vector2 forceToAdd = new Vector2(movementForceInAir * moveDirection, 0);
+            rb2D.AddForce(forceToAdd);
 
+            if (Mathf.Abs(rb2D.velocity.x) > velocity)
+            {
+                rb2D.velocity = new Vector2(velocity * moveDirection, rb2D.velocity.y);
+            }
+        }
+        // This for slow down airmove when stop input. move speed slow down.
+        else if (!isGrounded && !isWallSliding && moveDirection == 0)
+        {
+            rb2D.velocity = new Vector2(rb2D.velocity.x * airDragMultiplier, rb2D.velocity.y);
+        }
+        
         //Wall Slide session
         if (isWallSliding)
         {
