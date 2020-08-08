@@ -22,6 +22,7 @@ public class PlayerPlatform : MonoBehaviour
     public float wallCheckDistance;
     public float movementForceInAir;
     public float airDragMultiplier = 0.55f;
+    public float jumpHighierMultiplier = 0.5f;
     
     
 
@@ -80,10 +81,13 @@ public class PlayerPlatform : MonoBehaviour
     {
         moveDirection = Input.GetAxisRaw("horizontal");
 
-        if (Input.GetButtonDown("jump"))
-        {
+        if (Input.GetButtonDown("Jump"))
             Jump();
-        }
+
+        // This for change jump tab height;
+        if (Input.GetButtonUp("Jump"))
+            rb2D.velocity = new Vector2(rb2D.velocity.x, rb2D.velocity.y * jumpHighierMultiplier);
+
     }
 
     protected void Jump()
@@ -155,7 +159,7 @@ public class PlayerPlatform : MonoBehaviour
             Vector2 forceToAdd = new Vector2(movementForceInAir * moveDirection, 0);
             rb2D.AddForce(forceToAdd);
 
-            if (Mathf.Abs(rb2D.velocity.x) > velocity)
+            if (Mathf.Abs(rb2D.velocity.x) > velocity) 
             {
                 rb2D.velocity = new Vector2(velocity * moveDirection, rb2D.velocity.y);
             }
