@@ -43,14 +43,37 @@ public class PlayerPlatformAdvenced : MonoBehaviour
     private bool isGrounded;
     private bool isTouchingWall;
     private bool isWallSliding;
-    private bool canNormalJump;
-    private bool canWallJump;
     private int amountOfJumpsLeft;
     
 
+    /*
+    *   For Additional Jump
+    */
     private float jumpTimer;
     public float jumpTimerSet = 0.15f;
     private bool isAttemptingToJump;
+    private bool canNormalJump;
+    private bool canWallJump;
+    private bool checkJumpMultiplier;
+    private bool canMove;
+    private bool canFlip;
+    private float turnTimer;
+    private float turnTimerSet = 0.15f;
+    
+
+    /*
+    *   For Edge Climb
+    */
+    public Transform ledgeCheck;
+    private bool isTouchingLedge;
+    private bool canClimbLedge = false;
+    private bool ledgeDetected;
+    private Vector2 ledgePosBot;
+    private Vector2 ledgePos1;
+    private Vector2 ledgePos2;
+    
+
+    
 
     // Start is called before the first frame update
     void Start()
@@ -85,8 +108,9 @@ public class PlayerPlatformAdvenced : MonoBehaviour
 
         if (Input.GetButtonDown("Jump"))
         {
-            if (isGrounded || (amountOfJumpsLeft > 0 && isTouchingWall))
+            if (isGrounded || (amountOfJumpsLeft > 0 && !isTouchingWall))
             {
+                //?? Why?
                 NormalJump();
             }
             else
@@ -96,9 +120,34 @@ public class PlayerPlatformAdvenced : MonoBehaviour
             }
         }
 
+        //For protecting Wall Flip and move(...? why move?)
+        if (Input.GetButtonDown("horizontal") && isTouchingWall)
+        {
+            if (!isGrounded && moveDirection != facingDirection)
+            {
+                canMove = false;
+                canFlip = false;
+
+                turnTimer = turnTimerSet;
+            }
+        }
+
+        if (!canMove)
+        {
+            turnTimer -= Time.deltaTime;
+            if (turnTimer <= 0)
+            {
+                canMove = true;
+                canFlip = true;
+            }
+        }
+
         // This for change jump tab height;
-        if (Input.GetButtonUp("Jump"))
+        if (checkJumpMultiplier && !Input.GetButton("Jump"))
+        {
+            checkJumpMultiplier = false;
             rb2D.velocity = new Vector2(rb2D.velocity.x, rb2D.velocity.y * jumpHighierMultiplier);
+        }
     }
 
     protected void CheckJump()
@@ -130,6 +179,7 @@ public class PlayerPlatformAdvenced : MonoBehaviour
             amountOfJumpsLeft--;
             jumpTimer = 0;
             isAttemptingToJump = false;
+            checkJumpMultiplier = true;
         }   
     }
 
@@ -146,6 +196,10 @@ public class PlayerPlatformAdvenced : MonoBehaviour
             rb2D.AddForce(forceToAdd, ForceMode2D.Impulse);
             jumpTimer = 0;
             isAttemptingToJump = false;
+            checkJumpMultiplier = true;
+            turnTimer = 0;
+            canMove = true;
+            canFlip = true;
         }
     }
 
@@ -163,7 +217,7 @@ public class PlayerPlatformAdvenced : MonoBehaviour
 
     private void CheckIfWallSliding()
     {
-        if (isTouchingWall && moveDirection == facingDirection)
+        if (isTouchingWall && moveDirection == facingDirection && rb2D.velocity.y < 0)
             isWallSliding = true;
         else
             isWallSliding = false;
@@ -198,7 +252,7 @@ public class PlayerPlatformAdvenced : MonoBehaviour
 
     protected void Flip()
     {
-        if (!isWallSliding) // This condition for right position for wallSliding.
+        if (!isWallSliding && canFlip) // This condition for right position for wallSliding.
         {
             facingDirection *= -1;
             isFacingRight = !isFacingRight;
@@ -220,7 +274,7 @@ public class PlayerPlatformAdvenced : MonoBehaviour
         {
             rb2D.velocity = new Vector2(rb2D.velocity.x * airDragMultiplier, rb2D.velocity.y);
         }
-        else 
+        else if (canMove)
         {
             rb2D.velocity = new Vector2(velocity * moveDirection, rb2D.velocity.y);
         }
