@@ -27,7 +27,8 @@ public class PlayerCombat : MonoBehaviour
     }
 
     private void Update() {
-        
+        CheckCombatInput();
+        CheckAttacks();
     }
 
     private void CheckCombatInput()
@@ -81,7 +82,7 @@ public class PlayerCombat : MonoBehaviour
     {
         iSAttacking = false;
         anim.SetBool("isAttacking", iSAttacking);
-        anim.SetBool("aattack1", false);
+        anim.SetBool("attack1", false);
     }
 
     private void OnDrawGizmos()

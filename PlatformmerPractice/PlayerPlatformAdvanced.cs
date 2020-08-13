@@ -124,7 +124,7 @@ public class PlayerPlatformAdvenced : MonoBehaviour
             {
                 canMove = false;
                 canFlip = false;
-                rb2D.velocity = new Vector2(dashSpeed * facingDirection, rb2D.velocity.y);
+                rb2D.velocity = new Vector2(dashSpeed * facingDirection, 0);
                 dashTimeLeft -= Time.deltaTime;
 
                 if (Mathf.Abs(transform.position.x - lastImageXpos) > distanceBetweenImages)
@@ -392,6 +392,11 @@ public class PlayerPlatformAdvenced : MonoBehaviour
             isWalking = false;
     }
 
+    public int GetFacingDirection()
+    {
+        return facingDirection;
+    }
+
     public void DisableFlip()
     {
         canFlip = false;
@@ -401,9 +406,6 @@ public class PlayerPlatformAdvenced : MonoBehaviour
     {
         canFlip = true;
     }
-
-
-
 
     protected void Flip()
     {
