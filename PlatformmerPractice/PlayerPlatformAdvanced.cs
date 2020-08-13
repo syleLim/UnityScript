@@ -245,13 +245,20 @@ public class PlayerPlatformAdvenced : MonoBehaviour
 
         if (Input.GetButtonDown("Dash"))
         {
-            isDashing = true;
-            dashTimeLeft = dashTime;
-            lastDash = Time.time;
-
-            PlayerAfterImagePool.Instance.GetFromPool();
-            lastImageXpos = transform.position.x;
+            if (Time.time >= (lastDash + dashCooldown))
+            AttemptDash();
+            
         }
+    }
+
+    private void AttemptDash()
+    {
+        isDashing = true;
+        dashTimeLeft = dashTime;
+        lastDash = Time.time;
+
+        PlayerAfterImagePool.Instance.GetFromPool();
+        lastImageXpos = transform.position.x;
     }
 
     protected void CheckJump()
@@ -378,11 +385,25 @@ public class PlayerPlatformAdvenced : MonoBehaviour
         else if (!isFacingRight && moveDirection > 0)
             Flip(); 
         
-        if (rb2D.velocity.x != 0)
+        // Before rb2D.velocity.x != 0 and set attack is now.
+        if (Mathf.Abs(rb2D.velocity.x) >= 0.01f) 
             isWalking = true;
         else
             isWalking = false;
     }
+
+    public void DisableFlip()
+    {
+        canFlip = false;
+    }
+
+    public void EnableFlip()
+    {
+        canFlip = true;
+    }
+
+
+
 
     protected void Flip()
     {
@@ -392,13 +413,6 @@ public class PlayerPlatformAdvenced : MonoBehaviour
             isFacingRight = !isFacingRight;
             transform.Rotate(0.0f, 100.0f, 0.0f);
         }
-    }
-
-
-    // Draw Area for checking objs(grounding) in Scene(not play)
-    private void OnDrawGizmos() {
-        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-        Gizmos.DrawLine(wallCheck.position, new Vector3(wallCheck.position.x + wallCheckDistance, wallCheck.position.y, wallCheck.position.z));
     }
 
     protected void applyMovement()
@@ -428,5 +442,11 @@ public class PlayerPlatformAdvenced : MonoBehaviour
         //Seting downward animation : 15:40 in https://www.youtube.com/watch?v=MReoItM8BoI
         anim.SetFloat("yVelocity", rb2D.velocity.y);
         anim.SetBool("isWallSliding", isWallSliding);
+    }
+
+    // Draw Area for checking objs(grounding) in Scene(not play)
+    private void OnDrawGizmos() {
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        Gizmos.DrawLine(wallCheck.position, new Vector3(wallCheck.position.x + wallCheckDistance, wallCheck.position.y, wallCheck.position.z));
     }
 }
