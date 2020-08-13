@@ -59,6 +59,10 @@ public class PlayerPlatformAdvenced : MonoBehaviour
     private bool canFlip;
     private float turnTimer;
     private float turnTimerSet = 0.15f;
+    private float wallJumpTimer;
+    private float wallJumpTimerSet = 0.5f;
+    private bool hasWallJumped;
+    private int lastWallJumpDirection;
     
 
     /*
@@ -71,6 +75,10 @@ public class PlayerPlatformAdvenced : MonoBehaviour
     private Vector2 ledgePosBot;
     private Vector2 ledgePos1;
     private Vector2 ledgePos2;
+    public float ledgeClimbXOffset1 = 0f;
+    public float ledgeClimbYOffset1 = 0f;
+    public float ledgeClimbXOffset2 = 0f;
+    public float ledgeClimbYOffset2 = 0f;
     
 
     
@@ -95,6 +103,52 @@ public class PlayerPlatformAdvenced : MonoBehaviour
         CheckIfJump();
         CheckIfWallSliding();
         CheckJump();
+        CheckLedge();
+    }
+
+    private void CheckLedge()
+    {
+        if (ledgeDetected && !canClimbLedge)
+        {
+            canClimbLedge = true;
+
+            if (isFacingRight)
+            {
+                ledgePos1 = new Vector2(Mathf.Floor(ledgePosBot.x + wallCheckDistance) - ledgeClimbXOffset1, 
+                                        Mathf.Floor(ledgePosBot.y) + ledgeClimbYOffset1);
+                ledgePos2 = new Vector2(Mathf.Floor(ledgePosBot.x + wallCheckDistance) + ledgeClimbXOffset2,
+                                        Mathf.Floor(ledgePosBot.y) + ledgeClimbYOffset2);
+            }
+            else
+            {
+                ledgePos1 = new Vector2(Mathf.Floor(ledgePosBot.x - wallCheckDistance) + ledgeClimbXOffset1, 
+                                        Mathf.Floor(ledgePosBot.y) + ledgeClimbYOffset1);
+                ledgePos2 = new Vector2(Mathf.Floor(ledgePosBot.x - wallCheckDistance) - ledgeClimbXOffset2,
+                                        Mathf.Floor(ledgePosBot.y) + ledgeClimbYOffset2);
+            }
+
+            canMove = false;
+            canMove = true;
+        }
+
+        if (canClimbLedge)
+        {
+            transform.position = ledgePos1;
+        }
+        anim.SetBool("canClimbLedge", canClimbLedge);
+    }
+
+    /*
+    *   Call it and of climb animation
+    */
+    public void FinishLedgeClimb()
+    {
+        canClimbLedge = false;
+        transform.position = ledgePos2;
+        canMove = true;
+        canFlip = true;
+        ledgeDetected = false;
+        anim.SetBool("canClimbLedge", canClimbLedge);
     }
 
     private void FixedUpdate() {
@@ -132,7 +186,10 @@ public class PlayerPlatformAdvenced : MonoBehaviour
             }
         }
 
-        if (!canMove)
+        /*
+        *   change for climb (!canMove -> turnTimer >= 0)
+        */
+        if (turnTimer >= 0)
         {
             turnTimer -= Time.deltaTime;
             if (turnTimer <= 0)
@@ -169,6 +226,26 @@ public class PlayerPlatformAdvenced : MonoBehaviour
         {
             jumpTimer -= Time.deltaTime;
         }
+
+        /*
+        *   For Wall Jump again
+        */
+        if (wallJumpTimer > 0)
+        {
+            if (hasWallJumped && moveDirection == -lastWallJumpDirection)
+            {
+                rb2D.velocity = new Vector2(rb2D.velocity.x, 0.0f);
+                hasWallJumped = false;
+            }
+            else if (wallJumpTimer <= 0)
+            {
+                hasWallJumped = false;
+            }
+            else
+            {
+                wallJumpTimer -= Time.deltaTime;
+            }
+        }
     }
 
     protected void NormalJump()
@@ -200,6 +277,9 @@ public class PlayerPlatformAdvenced : MonoBehaviour
             turnTimer = 0;
             canMove = true;
             canFlip = true;
+            hasWallJumped = true;
+            wallJumpTimer = wallJumpTimerSet;
+            lastWallJumpDirection = -facingDirection;
         }
     }
 
@@ -213,11 +293,18 @@ public class PlayerPlatformAdvenced : MonoBehaviour
         
         // Check Wall with right direction 
         isTouchingWall = Physics2D.Raycast(wallCheck.position, transform.right, wallCheckDistance, WhatIsGround);
+        isTouchingLedge = Physics2D.Raycast(ledgeCheck.position, transform.right, wallCheckDistance, WhatIsGround);
+
+        if (isTouchingWall && !isTouchingLedge && !ledgeDetected)
+        {
+            ledgeDetected = true;
+            ledgePosBot = wallCheck.position;
+        }
     }
 
     private void CheckIfWallSliding()
     {
-        if (isTouchingWall && moveDirection == facingDirection && rb2D.velocity.y < 0)
+        if (isTouchingWall && moveDirection == facingDirection && rb2D.velocity.y < 0 && !canClimbLedge) //Ofcourse cant slide when climb
             isWallSliding = true;
         else
             isWallSliding = false;
