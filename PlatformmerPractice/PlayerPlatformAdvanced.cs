@@ -81,7 +81,17 @@ public class PlayerPlatformAdvenced : MonoBehaviour
     public float ledgeClimbYOffset2 = 0f;
     
 
-    
+    /*
+    *   For Dashing
+    */
+    private bool isDashing;
+    public float dashTime;
+    public float dashSpeed;
+    public float distanceBetweenImages;
+    public float dashCooldown;
+    private float dashTimeLeft;
+    private float lastImageXpos;
+    private float lastDash = -100f;
 
     // Start is called before the first frame update
     void Start()
@@ -104,6 +114,33 @@ public class PlayerPlatformAdvenced : MonoBehaviour
         CheckIfWallSliding();
         CheckJump();
         CheckLedge();
+    }
+
+    private void CheckDash()
+    {
+        if (isDashing)
+        {
+            if (dashTimeLeft > 0)
+            {
+                canMove = false;
+                canFlip = false;
+                rb2D.velocity = new Vector2(dashSpeed * facingDirection, rb2D.velocity.y);
+                dashTimeLeft -= Time.deltaTime;
+
+                if (Mathf.Abs(transform.position.x - lastImageXpos) > distanceBetweenImages)
+                {   
+                    PlayerAfterImagePool.Instance.GetFromPool();
+                    lastImageXpos = transform.position.x;
+                }
+            }
+
+            if (dashTimeLeft <= 0 || isTouchingWall)
+            {
+                isDashing = false;
+                canMove = true;
+                canFlip = true;
+            }
+        }
     }
 
     private void CheckLedge()
@@ -204,6 +241,16 @@ public class PlayerPlatformAdvenced : MonoBehaviour
         {
             checkJumpMultiplier = false;
             rb2D.velocity = new Vector2(rb2D.velocity.x, rb2D.velocity.y * jumpHighierMultiplier);
+        }
+
+        if (Input.GetButtonDown("Dash"))
+        {
+            isDashing = true;
+            dashTimeLeft = dashTime;
+            lastDash = Time.time;
+
+            PlayerAfterImagePool.Instance.GetFromPool();
+            lastImageXpos = transform.position.x;
         }
     }
 

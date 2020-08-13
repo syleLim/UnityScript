@@ -38,7 +38,7 @@ public class PlayerAfterImageSprite : MonoBehaviour
 
         if (Time.time >= (timeActivated + activeTime))
         {
-            // Pool Set
+            PlayerAfterImagePool.Instance.AddToPool(gameObject);
         }
     }
 }
