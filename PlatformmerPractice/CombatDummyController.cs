@@ -8,6 +8,8 @@ public class CombatDummyController : MonoBehaviour
     private float maxHealth, knockbackSpeedX, knockbackSpeedY, knockbackDuration, knockbackDeathSpeedX, knockbackDeathSpeedY, deathToque;
     [SerializeField]
     private bool applyKnockback;
+    [SerializeField]
+    private GameObject hitParticle;
 
     private float currentHealth, knockbackStart;
 
@@ -50,6 +52,8 @@ public class CombatDummyController : MonoBehaviour
         currentHealth -= amout;
         playerFacingDirection = pc.GetFacingDirection();
 
+        Instantiate(hitParticle, aliveGO.transform.position, Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f)));
+
         if (playerFacingDirection == 1)
             playerOnLeft = true;
         else
@@ -66,7 +70,7 @@ public class CombatDummyController : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            // Die
+            Die();
         }
     }
 
