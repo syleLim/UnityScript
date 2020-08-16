@@ -49,6 +49,8 @@ public class BasicEnermyController : MonoBehaviour
     
     // Damage
     private int damageDirection;
+    [SerializeField]
+    private GameObject hitParticle, deathChunkParticle, deathBloodParticle;
     
 
 
@@ -57,6 +59,7 @@ public class BasicEnermyController : MonoBehaviour
         alive = transform.Find("Alive").gameObject;
         aliveRb2D = alive.GetComponent<Rigidbody2D>();
         aliveAnim = alive.GetComponent<Animator>();
+        currentHealth = maxHealth;
         facingDirection = 1;
     }
 
@@ -96,9 +99,7 @@ public class BasicEnermyController : MonoBehaviour
         else
         {
             movement.Set(movementSpeed * facingDirection, aliveRb2D.velocity.y);
-            aliveRb2D.velocity = movement;
-
-            
+            aliveRb2D.velocity = movement;   
         }
     }
 
@@ -131,6 +132,8 @@ public class BasicEnermyController : MonoBehaviour
     private void EnterDeadState()
     {
         Destroy(gameObject);
+        Instantiate(deathChunkParticle, alive.transform.position, deathChunkParticle.transform.rotation);
+        Instantiate(deathBloodParticle, alive.transform.position, deathBloodParticle.transform.rotation);
     }
 
     private void UpdateDeadState()
@@ -188,6 +191,9 @@ public class BasicEnermyController : MonoBehaviour
     private void Damage(float[] attackDetails)
     {
         currentHealth -= attackDetails[0];
+
+        //Make particle
+        Instantiate(hitParticle, alive.transform.position, Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 180.0f)));
         
         //Set knockback direction
         if (attackDetails[1] > alive.transform.position.x)

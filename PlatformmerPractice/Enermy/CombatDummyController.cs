@@ -47,9 +47,9 @@ public class CombatDummyController : MonoBehaviour
         Checkknockback();    
     }
 
-    private void Damage(float amout)
+    private void Damage(float[] attackDetails)
     {
-        currentHealth -= amout;
+        currentHealth -= attackDetails[0];
         playerFacingDirection = pc.GetFacingDirection();
 
         Instantiate(hitParticle, aliveGO.transform.position, Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f)));

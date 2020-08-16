@@ -21,6 +21,8 @@ public class PlayerCombat : MonoBehaviour
 
     private Animator anim;
 
+    private float[] attackDetails;
+
     private void Start() {
         anim =  GetComponent<Animator>();
         anim.SetBool("canAttack", combatEnabled);
@@ -71,9 +73,12 @@ public class PlayerCombat : MonoBehaviour
     {
         Collider2D[] detectedObjects = Physics2D.OverlapCircleAll(attackHitBoxPos.position, attackRadius, whttIsDamageable);
 
+        attackDetails[0] = attackDamage;
+        attackDetails[1] = transform.position.x;
+
         foreach (Collider2D collider in detectedObjects)
         {
-            collider.transform.parent.SendMessage("Damage", attackDamage);
+            collider.transform.parent.SendMessage("Damage", attackDetails);
             //Instantiate hit particle;
         }
     }
