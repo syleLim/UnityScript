@@ -92,10 +92,8 @@ public class BasicEnermyController : MonoBehaviour
         groundDetected = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckDistance, whatIsGround);
         wallDetected = Physics2D.Raycast(wallCheck.position, Vector2.right, wallCheckDistance, whatIsGround);
 
-        if (groundDetected || wallDetected)
-        {
+        if (!groundDetected || wallDetected)
             Flip();
-        }
         else
         {
             movement.Set(movementSpeed * facingDirection, aliveRb2D.velocity.y);
