@@ -51,8 +51,21 @@ public class BasicEnermyController : MonoBehaviour
     private int damageDirection;
     [SerializeField]
     private GameObject hitParticle, deathChunkParticle, deathBloodParticle;
-    
 
+    //
+    [SerializeField]
+    private Transform touchDamageCheck;
+    [SerializeField]
+    private float lastTouchDamageTime,
+                    touchDamageCooldown,
+                    touchDamage,
+                    touchDamageWidth,
+                    touchDamageHeight;
+    [SerializeField]
+    private LayerMask whatIsPlayer;
+    private Vector2 touchDamageBotLeft, touchDamageTopRight;
+    private float[] attackDetails = new float[2];
+    
 
     private void Start()
     {
@@ -91,6 +104,8 @@ public class BasicEnermyController : MonoBehaviour
     {
         groundDetected = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckDistance, whatIsGround);
         wallDetected = Physics2D.Raycast(wallCheck.position, Vector2.right, wallCheckDistance, whatIsGround);
+
+        CheckTouchDamage();
 
         if (!groundDetected || wallDetected)
             Flip();
@@ -203,6 +218,26 @@ public class BasicEnermyController : MonoBehaviour
             SwitchState(State.Knockback);
         else
             SwitchState(State.Dead);
+    }
+
+    private void CheckTouchDamage()
+    {
+        // Normal game, in player damaged, give undamageable state is better.
+        if (Time.time >= lastTouchDamageTime + touchDamageCooldown)
+        {
+            touchDamageBotLeft.Set(touchDamageCheck.position.x - (touchDamageWidth / 2), touchDamageCheck.position.y - (touchDamageHeight / 2));
+            touchDamageTopRight.Set(touchDamageCheck.position.x + (touchDamageWidth / 2), touchDamageCheck.position.y + (touchDamageHeight / 2));
+
+            Collider2D hit = Physics2D.OverlapArea(touchDamageBotLeft, touchDamageTopRight, whatIsPlayer);
+
+            if (hit != null)
+            {
+                lastTouchDamageTime = Time.time;
+                attackDetails[0] = touchDamage;
+                attackDetails[1] = alive.transform.position.x;
+                hit.SendMessage("damage", attackDetails);
+            }
+        }
     }
 
     private void OnDrawGizmos() {
