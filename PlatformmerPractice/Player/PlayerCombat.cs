@@ -21,11 +21,16 @@ public class PlayerCombat : MonoBehaviour
 
     private Animator anim;
 
+    //enermy damaged
     private float[] attackDetails;
+    private PlayerPlatformAdvenced PC;
+    private PlayerState PS;
 
     private void Start() {
         anim =  GetComponent<Animator>();
         anim.SetBool("canAttack", combatEnabled);
+        PC = GetComponent<PlayerPlatformAdvenced>();
+        PS = GetComponent<PlayerState>();
     }
 
     private void Update() {
@@ -67,6 +72,22 @@ public class PlayerCombat : MonoBehaviour
             // Wait for new input
             gotInput = false;
         }
+    }
+
+    private void Damage(float[] attackDetails)
+    {
+        if (!PC.GetDashState())
+        {
+            int direction;
+        
+            PS.DecreaseHealth(attackDetails[0]);
+            if (attackDetails[1] < transform.position.x)
+                direction = 1;
+            else
+                direction = -1;
+        
+            PC.Knockback(direction);    
+        }        
     }
 
     private void CheckAttackHitBox()

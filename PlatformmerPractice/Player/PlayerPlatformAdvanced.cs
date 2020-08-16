@@ -93,6 +93,18 @@ public class PlayerPlatformAdvenced : MonoBehaviour
     private float lastImageXpos;
     private float lastDash = -100f;
 
+
+    /*
+    *   For damaging(knockback)
+    */
+    private bool knockback;
+    private float knockbackStartTime;
+    [SerializeField]
+    private float knockbackDuration;
+    [SerializeField]
+    private Vector2 knockbackSpeed;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -114,6 +126,28 @@ public class PlayerPlatformAdvenced : MonoBehaviour
         CheckIfWallSliding();
         CheckJump();
         CheckLedge();
+        CheckKnockback();
+    }
+
+    public void Knockback(int direction)
+    {
+        knockback = true;
+        knockbackStartTime = Time.time;
+        rb2D.velocity = new Vector2(knockbackSpeed.x * direction, knockbackSpeed.y);
+    }
+
+    private void CheckKnockback()
+    {
+        if (Time.time >= knockbackStartTime + knockbackDuration && knockback)
+        {
+            knockback = false;
+            rb2D.velocity = new Vector2(0.0f, rb2D.velocity.y);
+        }
+    }
+
+    public bool GetDashState()
+    {
+        return isDashing;   
     }
 
     private void CheckDash()
@@ -409,7 +443,7 @@ public class PlayerPlatformAdvenced : MonoBehaviour
 
     protected void Flip()
     {
-        if (!isWallSliding && canFlip) // This condition for right position for wallSliding.
+        if (!isWallSliding && canFlip && !knockback) // This condition for right position for wallSliding.
         {
             facingDirection *= -1;
             isFacingRight = !isFacingRight;
@@ -420,11 +454,11 @@ public class PlayerPlatformAdvenced : MonoBehaviour
     protected void applyMovement()
     {
         // This for slow down airmove when stop input. move speed slow down.
-        if (!isGrounded && !isWallSliding && moveDirection == 0)
+        if (!isGrounded && !isWallSliding && moveDirection == 0 && !knockback)
         {
             rb2D.velocity = new Vector2(rb2D.velocity.x * airDragMultiplier, rb2D.velocity.y);
         }
-        else if (canMove)
+        else if (canMove && !knockback)
         {
             rb2D.velocity = new Vector2(velocity * moveDirection, rb2D.velocity.y);
         }
