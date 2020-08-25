@@ -11,6 +11,8 @@ public class IdleState : State
 
 	protected float idleTime;
 
+	protected bool isPlayerMinAgroRange;
+
 	public IdleState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_IdleState stateData) : base(entity, stateMachine, animBoolName)
 	{
         this.stateData = stateData;
@@ -22,6 +24,8 @@ public class IdleState : State
         entity.SetVelocity(0f);
 		isIdleTimeOver = false;
 		SetRandomIdleTime();
+
+		isPlayerMinAgroRange = entity.CheckPlayerInMinAgroRange();
 	}
 
 
@@ -47,6 +51,7 @@ public class IdleState : State
 	public override void PhysicsUpdate()
 	{
 		base.PhysicsUpdate();
+		isPlayerMinAgroRange = entity.CheckPlayerInMinAgroRange();
 	}
 
 

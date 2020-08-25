@@ -26,6 +26,11 @@ public class E1_MoveState : MoveState
 	{
 		base.LogicUpdate();
 
+		if (isPlayerMinAgroRange)
+		{
+			stateMachine.ChangeState(enermy.playerDetectedState);
+		}
+
 		if (isDetectingWall || !isDetectingLedge)
 		{
 			enermy.idleState.SetFlipAfterIdle(true);
@@ -37,6 +42,4 @@ public class E1_MoveState : MoveState
 	{
 		base.PhysicsUpdate();
 	}
-
-
 }

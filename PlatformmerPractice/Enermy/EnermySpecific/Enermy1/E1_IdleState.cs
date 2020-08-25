@@ -21,11 +21,15 @@ public class E1_IdleState : IdleState
 		base.Exit();
 	}
 
-	
 
 	public override void LogicUpdate()
 	{
 		base.LogicUpdate();
+
+		if (isPlayerMinAgroRange)
+		{
+			stateMachine.ChangeState(enermy.playerDetectedState);
+		}
 
         if (isIdleTimeOver)
         {
@@ -36,7 +40,5 @@ public class E1_IdleState : IdleState
 	public override void PhysicsUpdate()
 	{
 		base.PhysicsUpdate();
-	}
-
-	
+	}	
 }
