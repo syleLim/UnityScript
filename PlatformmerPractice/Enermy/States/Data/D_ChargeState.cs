@@ -2,17 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class D_ChargeState : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+[CreateAssetMenu(fileName = "newChargeStateData", menuName = "Data/State Data/Charge Data")]
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+public class D_ChargeState : ScriptableObject
+{
+    public float chargeSpeed = 6f;
+    public float chargeTime = 2f;
 }

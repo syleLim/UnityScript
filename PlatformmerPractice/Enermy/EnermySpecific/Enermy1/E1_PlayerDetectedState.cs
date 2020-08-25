@@ -25,10 +25,10 @@ public class E1_PlayerDetectedState : PlayerDetectedState
 	{
 		base.LogicUpdate();
 
-        if (!isPlayerMaxAgroRange)
+        if (performLongRangeAction)
         {
             enermy.idleState.SetFlipAfterIdle(false);
-            stateMachine.ChangeState(enermy.idleState);
+            stateMachine.ChangeState(enermy.chargeState);
         }
 	}
 

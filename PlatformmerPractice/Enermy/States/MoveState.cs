@@ -21,9 +21,7 @@ public class MoveState : State
         base.Enter();
         entity.SetVelocity(stateData.movementSpeed);
 
-		isDetectingWall = entity.CheckWall();
-		isDetectingLedge = entity.CheckLedge();
-		isPlayerMinAgroRange = entity.CheckPlayerInMinAgroRange();
+		DoChecks();
     }
 
 
@@ -41,7 +39,12 @@ public class MoveState : State
 	public override void PhysicsUpdate()
 	{
 		base.PhysicsUpdate();
+		DoChecks();
+	}
 
+	public override void DoChecks()
+	{
+		base.DoChecks();
 		isDetectingWall = entity.CheckWall();
 		isDetectingLedge = entity.CheckLedge();
 		isPlayerMinAgroRange = entity.CheckPlayerInMinAgroRange();
