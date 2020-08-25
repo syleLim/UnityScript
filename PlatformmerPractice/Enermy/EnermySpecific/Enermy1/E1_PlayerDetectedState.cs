@@ -30,6 +30,10 @@ public class E1_PlayerDetectedState : PlayerDetectedState
             enermy.idleState.SetFlipAfterIdle(false);
             stateMachine.ChangeState(enermy.chargeState);
         }
+		else if (!isPlayerMinAgroRange)
+		{
+			stateMachine.ChangeState(enermy.lookForPlayerState);
+		}
 	}
 
 	public override void PhysicsUpdate()

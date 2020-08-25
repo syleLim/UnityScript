@@ -8,6 +8,7 @@ public class E1 : Entity
     public E1_MoveState moveState { get; private set; }
     public E1_PlayerDetectedState playerDetectedState { get; private set; }
     public E1_ChargeState chargeState { get; private set; }
+    public E1_LookForPlayerState lookForPlayerState { get; private set; }
 
     [SerializeField]
     private D_IdleState idleStateData;
@@ -17,6 +18,8 @@ public class E1 : Entity
     private D_PlayerDetectedState playerDetectedStateData;
     [SerializeField]
     private D_ChargeState chargeStateData;
+    [SerializeField]
+    private D_LookForPlayerState lookForPlayerStateData;
 
     public override void Start()
     {
@@ -26,6 +29,7 @@ public class E1 : Entity
         idleState = new E1_IdleState(this, stateMachine, "idle", idleStateData, this);
         playerDetectedState = new E1_PlayerDetectedState(this, stateMachine, "playerDetected", playerDetectedStateData, this);
         chargeState = new E1_ChargeState(this, stateMachine, "charge", chargeStateData, this);
+        lookForPlayerState = new E1_LookForPlayerState(this, stateMachine, "lookForPlayer", lookForPlayerStateData, this);
 
         stateMachine.initialize(moveState);
     }

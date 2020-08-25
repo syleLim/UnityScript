@@ -32,7 +32,7 @@ public class E1_ChargeState : ChargeState
 
 		if (!isDetectingLedge || isDetectingWall)
 		{
-			// TODO : connect to look for player
+			stateMachine.ChangeState(enermy.lookForPlayerState);
 		}
 
 

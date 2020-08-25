@@ -2,17 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+[CreateAssetMenu(fileName = "newLookForPlayerStateData", menuName = "Data/State Data/LookForPlayer Data")]
+public class D_LookForPlayerState : ScriptableObject
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public int amountOfTurns = 2;
+    public float timeBetweenTurns = 0.75f;
 }

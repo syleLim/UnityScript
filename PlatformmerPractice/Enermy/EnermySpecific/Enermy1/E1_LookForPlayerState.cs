@@ -2,17 +2,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class E1_LookForPlayerState : MonoBehaviour
+public class E1_LookForPlayerState : LookForPlayerState
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private E1 enermy;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	public E1_LookForPlayerState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_LookForPlayerState stateData, E1 enermy) : base(entity, stateMachine, animBoolName, stateData)
+	{
+        this.enermy = enermy;
+	}
+
+	public override void DoChecks()
+	{
+		base.DoChecks();
+	}
+
+	public override void Enter()
+	{
+		base.Enter();
+	}
+
+	public override void Exit()
+	{
+		base.Exit();
+	}
+
+	public override void LogicUpdate()
+	{
+		base.LogicUpdate();
+
+        if (isPlayerMinAgroRange)
+        {
+            stateMachine.ChangeState(enermy.playerDetectedState);
+        }
+        else if (isAllTurnsTimeDone)
+        {
+            stateMachine.ChangeState(enermy.moveState);
+        }
+	}
+
+	public override void PhysicsUpdate()
+	{
+		base.PhysicsUpdate();
+	}
 }
