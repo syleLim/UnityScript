@@ -34,13 +34,19 @@ public class E1_ChargeState : ChargeState
 		{
 			stateMachine.ChangeState(enermy.lookForPlayerState);
 		}
-
-
-		if (isChargeTimeOver)
+		else if (performCloseRangeAction)
+		{
+				stateMachine.ChangeState(enermy.miliAttackState);
+		}
+		else if (isChargeTimeOver)
 		{
 			if (isPlayerInMinAgroRange)
 			{
 				stateMachine.ChangeState(enermy.playerDetectedState);
+			}
+			else
+			{
+				stateMachine.ChangeState(enermy.lookForPlayerState);
 			}
 		}
 	}

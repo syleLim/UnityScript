@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 21ca1d7d532dab94e8f74975d113941a, type: 3}
-  m_Name: newChargeStateData
+  m_Name: E1_ChargeStateData
   m_EditorClassIdentifier: 
   chargeSpeed: 6
   chargeTime: 2

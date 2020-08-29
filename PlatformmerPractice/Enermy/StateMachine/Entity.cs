@@ -22,6 +22,10 @@ public class Entity : MonoBehaviour
     [SerializeField]
     private Transform playerCheck;
 
+    //Anim func
+    public AnimationToStatemachine atsm { get; private set; }
+
+
     public virtual void Start()
     {
         facingDirection = 1;
@@ -29,6 +33,7 @@ public class Entity : MonoBehaviour
         aliveGameObject = transform.Find("Alive").gameObject;
         rb = aliveGameObject.GetComponent<Rigidbody2D>();
         anim = aliveGameObject.GetComponent<Animator>();
+        atsm = aliveGameObject.GetComponent<AnimationToStatemachine>();
 
         stateMachine = new FiniteStateMachine();
     }
@@ -70,13 +75,8 @@ public class Entity : MonoBehaviour
         aliveGameObject.transform.Rotate(0f, 180f, 0f);
     }
 
-    public virtual void OnDrawGizmos() {
-        Gizmos.DrawLine(wallCheck.position, wallCheck.position + (Vector3)(Vector2.right * facingDirection * entityData.wallCheckDistance));
-        Gizmos.DrawLine(ledgeCheck.position, ledgeCheck.position + (Vector3)(Vector2.down * entityData.ledgeCheckDistance));
-    }
 
-
-    //
+    //Agro Range
     public virtual bool CheckPlayerInMinAgroRange()
     {
         return Physics2D.Raycast(playerCheck.position, aliveGameObject.transform.right, entityData.minAgroDistance, entityData.whatIsPlayer);
@@ -85,5 +85,17 @@ public class Entity : MonoBehaviour
     public virtual bool CheckPlayerInMaxAgroRange()
     {
         return Physics2D.Raycast(playerCheck.position, aliveGameObject.transform.right, entityData.maxAgroDistance, entityData.whatIsPlayer);
+    }
+
+    //Attack Range
+    public virtual bool CheckPlayerInCloseRangeAction()
+    {
+        return Physics2D.Raycast(playerCheck.position, aliveGameObject.transform.right, entityData.closeRangeActionDistance, entityData.whatIsPlayer);
+    }
+
+
+    public virtual void OnDrawGizmos() {
+        Gizmos.DrawLine(wallCheck.position, wallCheck.position + (Vector3)(Vector2.right * facingDirection * entityData.wallCheckDistance));
+        Gizmos.DrawLine(ledgeCheck.position, ledgeCheck.position + (Vector3)(Vector2.down * entityData.ledgeCheckDistance));
     }
 }

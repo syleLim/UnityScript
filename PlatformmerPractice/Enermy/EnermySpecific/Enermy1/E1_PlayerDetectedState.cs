@@ -27,9 +27,13 @@ public class E1_PlayerDetectedState : PlayerDetectedState
 
         if (performLongRangeAction)
         {
-            enermy.idleState.SetFlipAfterIdle(false);
+            //enermy.idleState.SetFlipAfterIdle(false); -> not sure
             stateMachine.ChangeState(enermy.chargeState);
         }
+		else if(performLongRangeAction)
+		{
+			stateMachine.ChangeState(enermy.miliAttackState);
+		}
 		else if (!isPlayerMinAgroRange)
 		{
 			stateMachine.ChangeState(enermy.lookForPlayerState);
