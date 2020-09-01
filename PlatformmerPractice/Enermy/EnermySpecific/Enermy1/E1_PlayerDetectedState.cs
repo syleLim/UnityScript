@@ -38,6 +38,11 @@ public class E1_PlayerDetectedState : PlayerDetectedState
 		{
 			stateMachine.ChangeState(enermy.lookForPlayerState);
 		}
+		else if (!isDetectedLedge)
+		{
+			entity.Flip();
+			stateMachine.ChangeState(enermy.moveState);
+		}
 	}
 
 	public override void PhysicsUpdate()

@@ -33,6 +33,7 @@ public class Entity : MonoBehaviour
     private float currentStunResistance;
     private float lastDamageTime;
     protected bool isStunned;
+    protected bool isDead;
     
 
     public virtual void Start()
@@ -127,6 +128,7 @@ public class Entity : MonoBehaviour
         currentStunResistance -= attackDetails.stunDamageAmount;
 
         DamageHop(entityData.damageHopSpeed);
+        Instantiate(entityData.hitParticle, aliveGameObject.transform.position, Quaternion.Euler(0f, 0f, Random.Range(0f, 360f)));
         if (attackDetails.position.x > aliveGameObject.transform.position.x)
             lastDamageDirection = -1;
         else
@@ -134,6 +136,9 @@ public class Entity : MonoBehaviour
 
         if (currentStunResistance <= 0)
             isStunned = true;
+
+        if (currentHealth <= 0)
+            isDead = true;
     }
 
     public virtual void SetVelocity(float velocity, Vector2 angle, int direction) //override

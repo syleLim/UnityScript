@@ -11,6 +11,7 @@ public class E1 : Entity
     public E1_LookForPlayerState lookForPlayerState { get; private set; }
     public E1_MiliAttackState miliAttackState { get; private set; }
     public E1_StunState stunState { get; private set; }
+    public E1_DeadState deadState { get; private set; }
 
     [SerializeField]
     private D_IdleState idleStateData;
@@ -26,6 +27,8 @@ public class E1 : Entity
     private D_MiliAttackState miliAttackStateData;
     [SerializeField]
     private D_StunState stunStateData;
+    [SerializeField]
+    private D_DeadState deadStateData;
 
     [SerializeField]
     private Transform miliAttackPosition;
@@ -41,6 +44,7 @@ public class E1 : Entity
         lookForPlayerState = new E1_LookForPlayerState(this, stateMachine, "lookForPlayer", lookForPlayerStateData, this);
         miliAttackState = new E1_MiliAttackState(this, stateMachine, "miliAttack", miliAttackPosition, miliAttackStateData, this);
         stunState = new E1_StunState(this, stateMachine, "stun", stunStateData, this);
+        deadState = new E1_DeadState(this, stateMachine, "dead", deadStateData, this);
 
         stateMachine.initialize(moveState);
     }
@@ -53,7 +57,9 @@ public class E1 : Entity
     {
         base.Damage(attackDetails);
 
-        if (isStunned && stateMachine.currentState != stunState)
+        if (isDead)
+            stateMachine.ChangeState(deadState);
+        else if (isStunned && stateMachine.currentState != stunState)
         {
             stateMachine.ChangeState(stunState);
         }
