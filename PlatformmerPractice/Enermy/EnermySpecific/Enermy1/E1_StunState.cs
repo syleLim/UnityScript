@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class E1_MiliAttackState : MiliAttackState
+public class E1_StunState : StunState
 {
     private E1 enermy;
 
-	public E1_MiliAttackState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, Transform attackPosition, D_MiliAttackState stateData, E1 enermy) : base(entity, stateMachine, animBoolName, attackPosition, stateData)
+	public E1_StunState(Entity entity, FiniteStateMachine stateMachine, string animBoolName, D_StunState stateData, E1 enermy) : base(entity, stateMachine, animBoolName, stateData)
 	{
         this.enermy = enermy;
 	}
@@ -26,22 +26,23 @@ public class E1_MiliAttackState : MiliAttackState
 		base.Exit();
 	}
 
-	public override void FinishAttack()
-	{
-		base.FinishAttack();
-	}
-
 	public override void LogicUpdate()
 	{
 		base.LogicUpdate();
-        if (isAnimationFinished)
+
+        if (isStunTimeOver)
         {
-            if (isPlayerMinAgroRange)
+            if (performCloseRangeAction)
             {
-                stateMachine.ChangeState(enermy.playerDetectedState);
+                stateMachine.ChangeState(enermy.miliAttackState);
+            }
+            else if (isPlayerMinAgroRange)
+            {
+                stateMachine.ChangeState(enermy.chargeState);
             }
             else
             {
+                enermy.lookForPlayerState.SetTurnImeddiately(true);
                 stateMachine.ChangeState(enermy.lookForPlayerState);
             }
         }
@@ -50,10 +51,5 @@ public class E1_MiliAttackState : MiliAttackState
 	public override void PhysicsUpdate()
 	{
 		base.PhysicsUpdate();
-	}
-
-	public override void TriggerAttack()
-	{
-		base.TriggerAttack();
 	}
 }

@@ -25,10 +25,21 @@ public class Entity : MonoBehaviour
     //Anim func
     public AnimationToStatemachine atsm { get; private set; }
 
+    //For Damage
+    private float currentHealth;
+    public int lastDamageDirection { get; private set; }
+    [SerializeField]
+    private Transform groundCheck;
+    private float currentStunResistance;
+    private float lastDamageTime;
+    protected bool isStunned;
+    
 
     public virtual void Start()
     {
         facingDirection = 1;
+        currentHealth = entityData.maxHealth;
+        currentStunResistance = entityData.stunResistance;
 
         aliveGameObject = transform.Find("Alive").gameObject;
         rb = aliveGameObject.GetComponent<Rigidbody2D>();
@@ -41,6 +52,9 @@ public class Entity : MonoBehaviour
     public virtual void Update()
     {
         stateMachine.currentState.LogicUpdate();
+
+        if (Time.time >= lastDamageTime + entityData.stunRecoveryTime)
+            ResetStunResistance();
     }
 
     public virtual void FixedUpdate()
@@ -75,7 +89,6 @@ public class Entity : MonoBehaviour
         aliveGameObject.transform.Rotate(0f, 180f, 0f);
     }
 
-
     //Agro Range
     public virtual bool CheckPlayerInMinAgroRange()
     {
@@ -93,6 +106,47 @@ public class Entity : MonoBehaviour
         return Physics2D.Raycast(playerCheck.position, aliveGameObject.transform.right, entityData.closeRangeActionDistance, entityData.whatIsPlayer);
     }
 
+
+    //Damage
+    public virtual void DamageHop(float velocity)
+    {
+        velocityWorkspace.Set(rb.velocity.x, velocity);
+        rb.velocity = velocityWorkspace;
+    }
+
+    public virtual void ResetStunResistance()
+    {
+        isStunned = false;
+        currentStunResistance = entityData.stunResistance;
+    }
+
+    public virtual void Damage(AttackDetails attackDetails)
+    {
+        lastDamageTime = Time.time;
+        currentHealth -= attackDetails.damageAmount;
+        currentStunResistance -= attackDetails.stunDamageAmount;
+
+        DamageHop(entityData.damageHopSpeed);
+        if (attackDetails.position.x > aliveGameObject.transform.position.x)
+            lastDamageDirection = -1;
+        else
+            lastDamageDirection = 1;
+
+        if (currentStunResistance <= 0)
+            isStunned = true;
+    }
+
+    public virtual void SetVelocity(float velocity, Vector2 angle, int direction) //override
+    {
+        angle.Normalize();
+        velocityWorkspace.Set(angle.x * velocity * direction, angle.y * velocity);
+        rb.velocity = velocityWorkspace;
+    }
+
+    public virtual bool CheckGround()
+    {
+        return Physics2D.OverlapCircle(groundCheck.position, entityData.groundCheckRadius, entityData.whatIsGround);
+    }
 
     public virtual void OnDrawGizmos() {
         Gizmos.DrawLine(wallCheck.position, wallCheck.position + (Vector3)(Vector2.right * facingDirection * entityData.wallCheckDistance));

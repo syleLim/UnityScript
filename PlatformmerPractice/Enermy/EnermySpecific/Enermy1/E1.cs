@@ -10,6 +10,7 @@ public class E1 : Entity
     public E1_ChargeState chargeState { get; private set; }
     public E1_LookForPlayerState lookForPlayerState { get; private set; }
     public E1_MiliAttackState miliAttackState { get; private set; }
+    public E1_StunState stunState { get; private set; }
 
     [SerializeField]
     private D_IdleState idleStateData;
@@ -23,6 +24,8 @@ public class E1 : Entity
     private D_LookForPlayerState lookForPlayerStateData;
     [SerializeField]
     private D_MiliAttackState miliAttackStateData;
+    [SerializeField]
+    private D_StunState stunStateData;
 
     [SerializeField]
     private Transform miliAttackPosition;
@@ -37,6 +40,7 @@ public class E1 : Entity
         chargeState = new E1_ChargeState(this, stateMachine, "charge", chargeStateData, this);
         lookForPlayerState = new E1_LookForPlayerState(this, stateMachine, "lookForPlayer", lookForPlayerStateData, this);
         miliAttackState = new E1_MiliAttackState(this, stateMachine, "miliAttack", miliAttackPosition, miliAttackStateData, this);
+        stunState = new E1_StunState(this, stateMachine, "stun", stunStateData, this);
 
         stateMachine.initialize(moveState);
     }
@@ -44,4 +48,15 @@ public class E1 : Entity
     public override void OnDrawGizmos() {
         //TODO : Draw Attack line   
     }
+
+    public override void Damage(AttackDetails attackDetails)
+    {
+        base.Damage(attackDetails);
+
+        if (isStunned && stateMachine.currentState != stunState)
+        {
+            stateMachine.ChangeState(stunState);
+        }
+    }
+
 }

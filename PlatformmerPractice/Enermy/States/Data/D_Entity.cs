@@ -15,4 +15,10 @@ public class D_Entity : ScriptableObject
     public LayerMask whatIsPlayer;
 
     public float closeRangeActionDistance = 1f;
+
+    public float maxHealth = 30f;
+    public float damageHopSpeed = 3f;
+    public float groundCheckRadius = 0.3f;
+    public float stunResistance = 3f;
+    public float stunRecoveryTime = 2f;
 }
